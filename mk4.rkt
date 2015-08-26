@@ -281,52 +281,6 @@
 ;           '(lambda (x) (if (zero? x) y y))
 ;           q)))
 
-(define run-keyword
-  (λ (keyword expr env out)
-    (conde
-     [(== keyword 'quote)
-      (== out expr)]
-     [(fresh (res)
-              (== keyword 'null?)
-              (eval-expro expr env res)
-              (== out (null? res)))]
-     
-     [(fresh (e1 e2 e3 condition)
-             (== keyword 'if)
-             (== expr `(,e1 ,e2 ,e3))
-             (eval-expro e1 env condition)
-             (conde
-              [(== condition #t) (eval-expro e2 env out)]
-              [(== condition #f) (eval-expro e3 env out)]))])))
-
-(define eval-expro
-  (λ (expr env out)
-    (conde
-      [(numbero expr) (== out expr)]
-;      [(stringo expr) (== out expr)]
-      [(== expr #t) (== out #t)]
-      [(== expr #f) (== out #f)]
-;      [`(cons ,e1 ,e2) (cons (eval-expr e1 env) (eval-expr e2 env))]
-;      [`(car ,e) (car (eval-expr e env))]
-;      [`(cdr ,e) (cdr (eval-expr e env))]
-
-      [(symbolo expr) (lookupo expr env out)] ;variables
-
-      [(fresh (x body)
-              (== expr `(lambda (,x) ,body))
-              (== out `(closure ,x ,body ,env)))] ; lambda 
-
-      [(fresh (e1 e2 proc arg x body env^)
-              (== expr `(,e1 ,e2))
-              (conde
-               [(lookupo e1 env '_keyword) (run-keyword e1 e2 env out)]
-               [(eval-expro e1 env proc)
-                (eval-expro e2 env arg)
-                (conde
-                 [(== proc `(closure ,x ,body ,env^))
-                  (eval-expro body `((,x . ,arg) . ,env^) out)])]
-               ))])))
-    
 (define lookupo
   (λ (x env out)
     (fresh (y v rest)
@@ -336,27 +290,87 @@
             [(=/= x y) (lookupo x rest out)])
            )))
 
+(define run-keyword
+  (λ (keyword expr env out)
+    (conde
+     [(== keyword 'quote)
+      (== out expr)]
 
-(run* (q) (eval-expro 'y '((y . #t) (x . #f) (if . _keyword) (null? . _keyword) (quote . _keyword)) q))
-(run* (q) (eval-expro '(quote (a b c)) '((if . _keyword) (null? . _keyword) (quote . _keyword)) q))
-(run* (q) (eval-expro '(if #t 1 0) '((if . _keyword) (null? . _keyword) (quote . _keyword)) q))
-(run* (q) (eval-expro '(((lambda (x) 5) 3)) '((if . _keyword) (null? . _keyword) (quote . _keyword)) q))
+     [(== keyword 'null?)
+      (fresh (res) 
+             (eval-expro expr env res)
+             (== out (null? res)))]
 
-;(run* (q) (lookupo 'if '((if . _keyword) (null? . _keyword) (quote . _keyword)) q))
-(run 1 (q) (fresh (e) (== '(if #t 1 0) `(,q . ,e)) (== q 'if)))
+     [(== keyword 'zero?)
+      (fresh (res) 
+             (eval-expro expr env res)
+             (== out (zero? res)))]
+     
+     [(== keyword 'sub1)
+      (fresh (res) 
+             (eval-expro expr env res)
+             (== out (sub1 res)))]
 
-(run 1 (q) (eval-expro
- '(((lambda (f)
-      ((lambda (x) (f (lambda (n) ((x x) n))))
-       (lambda (x) (f (lambda (n) ((x x) n))))))
-    (lambda (!)
-      (lambda (n)
-        (if (zero? n)
-            1
-            (* (! (sub1 n)) n)))))
-   5)
- '()
- q))
+     [(== keyword 'car)
+      (fresh (reslist rest)
+             (== expr `(,out . ,rest)))]
+
+     [(== keyword 'cdr)
+      (fresh (first)
+             (== expr `(,first . ,out)))])))
+
+(define eval-expro
+  (λ (expr env out)
+    (conde
+      [(numbero expr) (== out expr)]
+;      [(stringo expr) (== out expr)]
+      [(== expr #t) (== out #t)]
+      [(== expr #f) (== out #f)]
+
+      [(fresh (datum)
+              (== expr `(,datum))
+              (== out datum))]
+
+      [(fresh (datum)
+              (== `(quote ,datum) expr)
+              (== out datum))]
+
+      [(fresh (e1 e2 e3 condition)
+              (== expr `(if ,e1 ,e2 ,e3))
+              (eval-expro e1 env condition)
+              (conde
+               [(== condition #t) (eval-expro e2 env out)]
+               [(== condition #f) (eval-expro e3 env out)]))]
+;      [`(cons ,e1 ,e2) (cons (eval-expr e1 env) (eval-expr e2 env))]
+;      [`(car ,e) (car (eval-expr e env))]
+;      [`(cdr ,e) (cdr (eval-expr e env))]
+
+      [(symbolo expr) (lookupo expr env out)] ;variables
+
+      [(fresh (x body)
+              (== expr `(lambda (,x) ,body))
+              (== out `(closure ,x ,body ,env)))]
+      
+      [(fresh (e1 e2 proc arg x body env^)
+              (== expr `(,e1 ,e2))
+              (conde
+               [(lookupo e1 env '_kw) (run-keyword e1 e2 env out)]
+               [(eval-expro e1 env proc)
+                (eval-expro e2 env arg)
+                (conde
+                 [(== proc `(closure ,x ,body ,env^))
+                  (eval-expro body `((,x . ,arg) . ,env^) out)])]
+               ))])))
+
+(run* (q) (eval-expro '(3) '() q))
+(run* (q) (eval-expro 'y '((y . #t) (x . #f) (null? . _kw) (quote . _kw)) q))
+(run* (q) (eval-expro '(quote (a b c)) '((null? . _kw) (quote . _kw)) q))
+(run* (q) (eval-expro '(if #t 1 0) '((null? . _kw) (quote . _kw)) q))
+(run* (q) (eval-expro '((lambda (x) 5) 3) '((null? . _kw) (quote . _kw)) q))
+
+(run* (q) (eval-expro '('(1 2 3)) '((car . _kw) (cdr . _kw)) q))
+(run* (q) (eval-expro '(car (1 2 3)) '((car . _kw) (cdr . _kw)) q))
+(run* (q) (eval-expro '(cdr (1 2 3)) '((car . _kw) (cdr . _kw)) q))
 
 ;((Z (λ (!)
 ;      (λ (n)
