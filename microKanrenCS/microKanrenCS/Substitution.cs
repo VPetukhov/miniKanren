@@ -1,16 +1,14 @@
 ﻿namespace microKanrenCS
 {
-	public class Substitution
+	public struct Substitution
 	{
-		public Substitution(LogicVar @base, LogicValue target)
+		public LogicVar Variable { get; }
+		public object Value { get; set; }
+
+		public Substitution(LogicVar variable, object value)
 		{
-			Base = @base;
-			Target = target;
+			Variable = variable;
+			Value = value;
 		}
-
-		public LogicVar Base { get; }
-		public LogicValue Target { get; }
-
-
 	}
 }
