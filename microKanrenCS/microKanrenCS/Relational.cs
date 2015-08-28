@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace microKanrenCS
 {
@@ -16,80 +18,64 @@ namespace microKanrenCS
 			return subst => subst.Unify(var1, var2);
 		}
 
-		private static ISubstitutions Unify(this ISubstitutions subst, object var1, object var2)
+		public static Goal Conjunction(Goal goal1, Goal goal2)
 		{
-			var logVar1 = var1 as LogicVar;
-			var logVar2 = var2 as LogicVar;
-
-			var val1 = logVar1 == null ? var1 : subst.GetValue(logVar1);
-			var val2 = logVar2 == null ? var2 : subst.GetValue(logVar2);
-
-			var logVal1 = val1 as LogicVar;
-			var logVal2 = val2 as LogicVar;
-			if (logVal1 != null && logVal2 != null && logVal1 == logVal2)
-				return subst;
-
-			if (logVal1 != null)
-				return subst.Extend(logVal1, val2);
-
-			if (logVal2 != null)
-				return subst.Extend(logVal2, val1);
-
-			var list1 = val1 as IEnumerable<object>;
-			var list2 = val2 as IEnumerable<object>;
-
-			if (list1 != null && list2 != null)
+			return subst =>
 			{
-				var iter1 = list1.GetEnumerator();
-				var iter2 = list2.GetEnumerator();
-				var s1 = subst.Unify(iter1.Current, iter2.Current);
-				ISubstitutions s2 = null;
-
-				if (s1 != null && iter1.MoveNext() && iter2.MoveNext())
-				{
-					s2 = s1.Unify(GetIEnumerable(iter1), GetIEnumerable(iter2));
-
-				}
-				return s2;
-			}
-
-			return val1 == val2 ? subst : null;
+				var res = Conjunction(subst, goal1, goal2);
+				return res == null ? null : new InfiniteSubstitutions(res);
+			};  //TODO Fabric
 		}
 
 		public static Goal Disjunction(Goal goal1, Goal goal2)
 		{
-			return subst => new InfiniteSubstitutions(DisjunctGoals(subst, goal1, goal2));	//TODO Fabric
+
+			throw new NotImplementedException();
 		}
 
-		private static IEnumerable<Substitution> DisjunctGoals(ISubstitutions subst, Goal goal1, Goal goal2)
+		private static IEnumerable<Substitution> Conjunction(ISubstitutions subst, Goal goal1, Goal goal2)
 		{
 			var iter1 = goal1(subst).GetEnumerator();
 			var iter2 = goal2(subst).GetEnumerator();
 
-			bool firstNotEmpty = true, secondNotEmpty = true;
+			var resSubst = GetEmptySubst();
 
-			while (firstNotEmpty || secondNotEmpty)
+			bool firstNotEmpty = iter1.MoveNext(), secondNotEmpty = iter2.MoveNext();
+
+			while (firstNotEmpty && secondNotEmpty)
 			{
-				if (firstNotEmpty)	//TODO apply (refactor unify?)
-				{
-					yield return iter1.Current;
-					firstNotEmpty = iter1.MoveNext();
-				}
+				resSubst = resSubst.Unify(iter1.Current);
+				if (resSubst == null)
+					return null;
 
-				if (secondNotEmpty)
-				{
-					yield return iter2.Current;
-					secondNotEmpty = iter2.MoveNext();
-				}
+				firstNotEmpty = iter1.MoveNext();
+
+				resSubst = resSubst.Unify(iter2.Current);
+				if (resSubst == null)
+					return null;
+
+				secondNotEmpty = iter2.MoveNext();
 			}
+
+			if (firstNotEmpty)
+				return ConjunctFinite(resSubst, new InfiniteSubstitutions(iter1.EnumerateFromCurrent())); //TODO Fabric
+
+			if (secondNotEmpty)
+				return ConjunctFinite(resSubst, new InfiniteSubstitutions(iter2.EnumerateFromCurrent())); //TODO Fabric
+
+			return resSubst;
 		}
 
-		private static IEnumerable<object> GetIEnumerable(IEnumerator<object> enumerator)
+		private static IEnumerable<Substitution> ConjunctFinite(ISubstitutions finit, ISubstitutions potentialInfinite)
 		{
-			do
+			ISubstitutions res = potentialInfinite;
+			foreach (var subst in finit)
 			{
-				yield return enumerator.Current;
-			} while (enumerator.MoveNext());
+				res = res.Unify(subst);
+				if (res == null)
+					return null;
+			}
+			return res;
 		}
 	}
 }

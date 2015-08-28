@@ -32,6 +32,16 @@ namespace microKanrenCS
 			return value;
 		}
 
+		public ISubstitutions Unify(object var1, object var2)
+		{
+			throw new NotImplementedException();
+		}
+
+		public ISubstitutions Unify(Substitution substitution)
+		{
+			throw new NotImplementedException();
+		}
+
 		public ISubstitutions Extend(LogicVar variable, object value)
 		{
 			if (value is LogicVar)

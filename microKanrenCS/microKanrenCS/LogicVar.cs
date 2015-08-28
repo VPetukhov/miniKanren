@@ -4,31 +4,15 @@ namespace microKanrenCS
 {
 	public class LogicVar
 	{
-		public object Value { get; private set; }
+		private static int id;
 
-		protected LogicVar()
-		{ }
+		public int Id { get; }
 
-		public LogicVar(object value)
+		public LogicVar()
 		{
-			SetValue(value);
+			Id = id++;
 		}
 
-		public void SetValue(object value)
-		{
-			if (IsEvalueted)
-				throw new Exception("Variable is already evalueted");
-
-			if (value == null)
-				return;
-
-			if (!(value is int) && !(value is double) && !(value is float)
-			    && !(value is decimal) && !(value is string))
-				throw new Exception("Bad value type");
-
-			Value = value;
-		}
-
-		public bool IsEvalueted => Value != null;
+		public override string ToString() => $"{Id}";
 	}
 }
