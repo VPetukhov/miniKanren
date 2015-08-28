@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace microKanrenCS
+namespace Relational
 {
 	public interface ISubstitutions : IEnumerable<Substitution>
 	{

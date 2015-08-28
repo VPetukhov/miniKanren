@@ -54,16 +54,17 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="RelationalTests.cs" />
+    <Compile Include="MiniKanrenTests.cs" />
+    <Compile Include="MicroKanrenTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\microKanrenCS\microKanrenCS.csproj">
+    <ProjectReference Include="..\microKanrenCS\Relational.csproj">
       <Project>{C9C54950-808F-4B04-9763-C16F1EED0091}</Project>
-      <Name>microKanrenCS</Name>
+      <Name>Relational</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

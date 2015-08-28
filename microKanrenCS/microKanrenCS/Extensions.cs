@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace microKanrenCS
+namespace Relational
 {
 	public static class Extensions
 	{

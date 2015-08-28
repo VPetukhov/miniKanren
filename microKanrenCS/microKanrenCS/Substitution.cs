@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace microKanrenCS
+namespace Relational
 {
 	public class Substitution
 	{
