@@ -329,8 +329,9 @@
     (conde
       [(numbero expr) (== out expr)]
 ;      [(stringo expr) (== out expr)]
-      [(== expr #t) (== out #t)]
-      [(== expr #f) (== out #f)]
+      [(== expr #t) (== out expr)]
+      [(== expr #f) (== out expr)]
+      [(== expr '()) (== out expr)]
 
       [(fresh (e1 e2 e3 condition)
               (== expr `(if ,e1 ,e2 ,e3))
@@ -359,7 +360,8 @@
                   (eval-expro body `((,x . ,arg) . ,env^) out)])]
                ))])))
 
-(run* (q) (eval-expro '(3) '() q))
+(run* (q) (eval-expro '(3) '((quote . _kw)) q))
+(run* (q) (eval-expro '('()) '((quote . _kw)) q))
 (run* (q) (eval-expro '('(1 2 3)) '((quote . _kw)) q))
 (run* (q) (eval-expro 'y '((y . #t) (x . #f) (null? . _kw) (quote . _kw)) q))
 (run* (q) (eval-expro '(quote (a b c)) '((null? . _kw) (quote . _kw)) q))

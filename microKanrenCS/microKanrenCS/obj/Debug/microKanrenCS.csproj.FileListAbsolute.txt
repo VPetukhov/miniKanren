@@ -1,0 +1,6 @@
+E:\Repo\miniKanren\microKanrenCS\microKanrenCS\bin\Debug\microKanrenCS.exe.config
+E:\Repo\miniKanren\microKanrenCS\microKanrenCS\bin\Debug\microKanrenCS.exe
+E:\Repo\miniKanren\microKanrenCS\microKanrenCS\bin\Debug\microKanrenCS.pdb
+E:\Repo\miniKanren\microKanrenCS\microKanrenCS\obj\Debug\microKanrenCS.csprojResolveAssemblyReference.cache
+E:\Repo\miniKanren\microKanrenCS\microKanrenCS\obj\Debug\microKanrenCS.exe
+E:\Repo\miniKanren\microKanrenCS\microKanrenCS\obj\Debug\microKanrenCS.pdb

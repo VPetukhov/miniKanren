@@ -1,0 +1,11 @@
+E:\Repo\miniKanren\microKanrenCS\UnitTests\bin\Debug\UnitTests.dll
+E:\Repo\miniKanren\microKanrenCS\UnitTests\bin\Debug\UnitTests.pdb
+E:\Repo\miniKanren\microKanrenCS\UnitTests\bin\Debug\microKanrenCS.exe
+E:\Repo\miniKanren\microKanrenCS\UnitTests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+E:\Repo\miniKanren\microKanrenCS\UnitTests\bin\Debug\nunit.framework.dll
+E:\Repo\miniKanren\microKanrenCS\UnitTests\bin\Debug\microKanrenCS.pdb
+E:\Repo\miniKanren\microKanrenCS\UnitTests\bin\Debug\nunit.framework.xml
+E:\Repo\miniKanren\microKanrenCS\UnitTests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.xml
+E:\Repo\miniKanren\microKanrenCS\UnitTests\obj\Debug\UnitTests.csprojResolveAssemblyReference.cache
+E:\Repo\miniKanren\microKanrenCS\UnitTests\obj\Debug\UnitTests.dll
+E:\Repo\miniKanren\microKanrenCS\UnitTests\obj\Debug\UnitTests.pdb
